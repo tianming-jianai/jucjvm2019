@@ -1,16 +1,15 @@
 package com.atguigu.day01;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * @BelongsProject: jucjvm2019
@@ -39,8 +38,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class NotSafeDemo03 {
     public static void main(String[] args) {
-        Map<String, String> map = new HashMap<>();
-        // Map<String, String> map = new ConcurrentHashMap<>();
+        // listNotSafe();
+        setNotSafe();
+        // hashMapNotSafe();
+    }
+
+    private static void hashMapNotSafe() {
+        // Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new ConcurrentHashMap<>();
         for (int i = 0; i < 30; i++) {
             new Thread(() -> {
                 map.put(Thread.currentThread().getName(), UUID.randomUUID().toString().substring(0, 8));
@@ -50,7 +55,8 @@ public class NotSafeDemo03 {
     }
 
     private static void setNotSafe() {
-        Set<String> set = new HashSet<>();
+        // Set<String> set = new HashSet<>();
+        Set<String> set = new CopyOnWriteArraySet<>();
         for (int i = 0; i < 30; i++) {
             new Thread(() -> {
                 set.add(UUID.randomUUID().toString().substring(0, 8));
