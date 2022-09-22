@@ -10,11 +10,50 @@ import java.util.concurrent.locks.ReentrantLock;
  * @Author: 张世罡
  * @CreateTime: 2022/9/22 0:32
  * @Description:
+ * 知识小总结：多线程编程套路+while判断+新版写法
  */
 public class ProdConsumerDemo05 {
     public static void main(String[] args) {
         AirCondition2 airCondition = new AirCondition2();
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    airCondition.increment();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "A").start();
 
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    airCondition.decrement();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "B").start();
+
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    airCondition.increment();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "C").start();
+
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    airCondition.decrement();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "D").start();
     }
 }
 
@@ -30,6 +69,7 @@ class AirCondition2 {
                 condition.await();
             }
             number++;
+            System.out.println(Thread.currentThread().getName() + "\t" + number);
             condition.signal();
         } finally {
             lock.unlock();
@@ -43,6 +83,7 @@ class AirCondition2 {
                 condition.await();
             }
             number--;
+            System.out.println(Thread.currentThread().getName() + "\t" + number);
             condition.signal();
         } finally {
             lock.unlock();
