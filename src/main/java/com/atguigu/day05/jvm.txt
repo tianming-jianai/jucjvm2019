@@ -81,3 +81,19 @@ Stack栈
 原因有二:
     (1）Java虚拟机的堆内存设置不够，可以通过参数-Xms、-Xmx来调整。
     (2）代码中创建了大量大对象，并且长时间不能被垃圾收集器收集（存在被引用）。
+
+MinorGC的过程（复制 → 清空 → 替换）
+1. eden、survivorFrom复制到survivorTo，年龄+1
+首先，当Eden区 满的时候会触发第一次GC,把还活着的对象拷贝到SurvivorFrom区，
+当Eden区再次触发GC的时候会扫描Eden区和From区域,对这两个区域进行垃圾回收，
+经过这次回收后还存活的对象，则直接复制到To区域( 如果有对象的年龄已经达到了老年的标准，则复制到老年代区)，
+同时把这些对象的年龄+1
+
+2. 清空eden、survivorFrom
+然后，清空eden和survivorFrom中的对象，也即复制之后有交换，谁空谁是to
+
+3. SurvivorTo和SurvivorFrom互换
+最后，SurvivorTo和SurvivorFrom互换，原SurvivorTo成为下一次GC时的SurvivorFrom区。
+部分对象会在From和To区域中复制来复制去,如此交换15次(由JVM参数MaxTenuringThreshold决定,这个参数默认是15),
+最终如果还是存活,就存入到老年代
+
